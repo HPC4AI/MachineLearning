@@ -40,7 +40,6 @@ def gradient_descent(
     b: float, # parameters
     iteration: int
 ):
-    m = x.shape[0]
     assert x.shape[0] == y.shape[0], "invalid train data set"
 
     for i in range(iteration):
