@@ -136,5 +136,5 @@ class NetWork():
                 print(f"Epoch {j} complete.")
 
 training_data, validation_data, test_data = mnist_loader.load_data_wrapper()
-net = NetWork([784, 16, 10])
+net = NetWork([784, 32, 10])
 net.stochastic_gradient_descent(training_data=list(training_data), epochs=30, mini_batch_size=10, eta=3.0, test_data=list(test_data))
