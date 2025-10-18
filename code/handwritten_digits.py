@@ -42,6 +42,38 @@ class NetWork():
         """Return the vector of partial derivatives \partial C_x /
         \partial a for the output activations."""
         return (output_activations-y)
+    
+    def back_propagation(
+        self,
+        x: np.array,
+        y: np.array
+    ):
+        # initialize zero gradient
+        grad_w = [np.zeros(w.shape) for w in self.weights]
+        grad_b = [np.zeros(b.shape) for b in self.biases]
+
+        # forward, save activation and weighted sum
+        a = x
+        activation = [a]
+        w_sum  = []
+        for w, b in zip(self.weights, self.biases):
+            out = np.matmul(w, a) + b
+            w_sum.append(out)
+            a = sigmoid(out)
+            activation.append(a)
+        
+        # backward, update weights and bias
+        delta = self.cost_derivative(activation[-1], y) * sigmoid_prime(w_sum[-1]) # Hadamard product
+        grad_b[-1] = delta
+        grad_w[-1] = np.matmul(delta, activation[-2].transpose())
+
+        for l in range(2, len(self.weights)+1):
+            delta = np.matmul(self.weights[-l+1].transpose(), delta) * sigmoid_prime(w_sum[-l])
+            grad_b[-l] = delta
+            grad_w[-l] = np.matmul(delta, activation[-l-1].transpose())
+
+        return (grad_b, grad_w)
+        
 
     def backprop(
         self, 
@@ -96,7 +128,7 @@ class NetWork():
         for x, y in mini_batch:
             # Compute the gradient of the weights and biases with respect to a single data point.
             # How to compute gradients for a batch all at once?
-            delta_nbala_b, delta_nbala_w = self.backprop(x, y)
+            delta_nbala_b, delta_nbala_w = self.back_propagation(x, y)
             nbala_w = [nw+dnw for (nw, dnw) in zip(nbala_w, delta_nbala_w)]
             nbala_b = [nb+dnb for (nb, dnb) in zip(nbala_b, delta_nbala_b)]
         
